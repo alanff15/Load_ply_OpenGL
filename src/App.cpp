@@ -9,12 +9,12 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/VertexBufferLayout.h"
 
+#include "Model.h"
+
 #include <memory>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
-
-// #include "../../res/app.glsl"
 
 #ifndef M_PI
 #define M_PI ((float)3.14159265358979323846)
@@ -49,11 +49,6 @@ namespace App {
 
 Renderer renderer;
 
-std::unique_ptr<VertexBuffer> vb;
-std::unique_ptr<VertexArray> vao;
-std::unique_ptr<IndexBuffer> ib;
-std::unique_ptr<Shader> shader;
-
 glm::vec3 eye = glm::vec3(0.0, 0.0, 10.0);
 glm::vec3 center = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 angles = glm::vec3(0.0, 0.0, 0.0);
@@ -62,48 +57,15 @@ bool mouse_b1 = false;
 glm::vec3 angle_anchor;
 glm::dvec2 mouse_anchor;
 
+Model caixa;
+
 void Setup(GLFWwindow* window) {
   // blend
   GLCall(glEnable(GL_BLEND));
   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   GLCall(glEnable(GL_DEPTH_TEST));
-  // vertices
-  float data[] = {
-    -1.0, -1.0, 1.0,  0.0, 0.0, 1.0,  // pos(x,y,z) cor(r,g,b)
-    1.0,  -1.0, 1.0,  1.0, 0.0, 1.0,  //
-    1.0,  1.0,  1.0,  1.0, 1.0, 1.0,  //
-    -1.0, 1.0,  1.0,  0.0, 1.0, 1.0,  //
-    -1.0, -1.0, -1.0, 0.0, 0.0, 0.0,  //
-    1.0,  -1.0, -1.0, 1.0, 0.0, 0.0,  //
-    1.0,  1.0,  -1.0, 1.0, 1.0, 0.0,  //
-    -1.0, 1.0,  -1.0, 0.0, 1.0, 0.0   //
-  };
-  vao = std::make_unique<VertexArray>();
-  vb = std::make_unique<VertexBuffer>(data, 8 * (3 + 3) * sizeof(float));
-  VertexBufferLayout vbl;
-  vbl.Push<float>(3);  // shader 0: position
-  vbl.Push<float>(3);  // shader 1: color
-  vao->AddBuffer(*vb, vbl);
-  // indices
-  uint32_t indices[] = {
-    0, 1, 2,  //
-    2, 3, 0,  //
-    1, 5, 6,  //
-    6, 2, 1,  //
-    7, 6, 5,  //
-    5, 4, 7,  //
-    4, 0, 3,  //
-    3, 7, 4,  //
-    4, 5, 1,  //
-    1, 0, 4,  //
-    3, 2, 6,  //
-    6, 7, 3   //
-  };
-  ib = std::make_unique<IndexBuffer>(indices, 12 * 3);
-  // shader
-  shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
-  // shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
-  shader->Bind();
+
+  caixa.load();
 }
 
 void Render(GLFWwindow* window) {
@@ -118,9 +80,8 @@ void Render(GLFWwindow* window) {
   glm::mat4 mvp = projection * view * model;
 
   // set uniforms
-  shader->Bind();
-  shader->SetUniformMat4f("u_mvp", mvp);
-  renderer.Draw(*vao, *ib, *shader);
+  caixa.SetUniformMat4f("u_mvp", mvp);
+  renderer.Draw(caixa.getVao(), caixa.getIb(), caixa.getShader());
 }
 
 void RenderInterface(GLFWwindow* window) {
@@ -131,10 +92,7 @@ void RenderInterface(GLFWwindow* window) {
 }
 
 void Shutdown(GLFWwindow* window) {
-  vb.release();
-  vao.release();
-  ib.release();
-  shader.release();
+  caixa.~Model();
 }
 
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {

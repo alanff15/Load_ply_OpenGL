@@ -36,6 +36,7 @@ add_executable(load_ply #WIN32
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui_tables.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui_widgets.cpp
     # main
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/App.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )
