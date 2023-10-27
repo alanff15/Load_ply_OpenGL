@@ -57,7 +57,7 @@ bool mouse_b1 = false;
 glm::vec3 angle_anchor;
 glm::dvec2 mouse_anchor;
 
-Model caixa;
+Model caixa_1, caixa_2;
 
 void Setup(GLFWwindow* window) {
   // blend
@@ -65,7 +65,8 @@ void Setup(GLFWwindow* window) {
   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   GLCall(glEnable(GL_DEPTH_TEST));
 
-  caixa.load();
+  caixa_1.load();
+  caixa_2.load();
 }
 
 void Render(GLFWwindow* window) {
@@ -75,13 +76,17 @@ void Render(GLFWwindow* window) {
   glm::mat4 model = glm::rotate(glm::mat4(1.0f), angles.x, glm::vec3(1, 0, 0));
   model *= glm::rotate(glm::mat4(1.0f), angles.z, glm::vec3(0, 0, 1));
   model *= glm::rotate(glm::mat4(1.0f), angles.y, glm::vec3(0, 1, 0));
+  glm::mat4 model_1 = glm::translate(model, glm::vec3(1.5f, 0, 0));
+  glm::mat4 model_2 = glm::translate(model, glm::vec3(-1.5f, 0, 0));
+
   glm::mat4 view = glm::lookAt(eye, center, glm::vec3(0.0, 1.0, 0.0));
   glm::mat4 projection = glm::perspective(recalculatefov((float)w, (float)h), 1.0f * (float)w / (float)h, 0.1f, 1000.0f);
-  glm::mat4 mvp = projection * view * model;
 
   // set uniforms
-  caixa.SetUniformMat4f("u_mvp", mvp);
-  renderer.Draw(caixa.getVao(), caixa.getIb(), caixa.getShader());
+  caixa_1.SetUniformMat4f("u_mvp", projection * view * model_1);
+  renderer.Draw(caixa_1.getVao(), caixa_1.getIb(), caixa_1.getShader());
+  caixa_2.SetUniformMat4f("u_mvp", projection * view * model_2);
+  renderer.Draw(caixa_2.getVao(), caixa_2.getIb(), caixa_2.getShader());
 }
 
 void RenderInterface(GLFWwindow* window) {
@@ -92,7 +97,8 @@ void RenderInterface(GLFWwindow* window) {
 }
 
 void Shutdown(GLFWwindow* window) {
-  caixa.~Model();
+  caixa_1.~Model();
+  caixa_2.~Model();
 }
 
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
