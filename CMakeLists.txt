@@ -7,6 +7,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/dep/glew-2.1.0/include
 	${CMAKE_CURRENT_SOURCE_DIR}/dep/glm
 	${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui
+	${CMAKE_CURRENT_SOURCE_DIR}/dep/happly
 )
 
 link_libraries(
