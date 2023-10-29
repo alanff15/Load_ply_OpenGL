@@ -32,7 +32,7 @@ void main() {
   vec3 luz = normalize(vec3(0.0, 0.0, -1.0));
   vec4 cor = texture2D(u_texture, ftexCoord);
   float ganho = 0.5 + 0.5 * dot(luz, fnormal);
-  fragColor = vec4(ganho * cor.xyz, cor.w);
+  fragColor = pow(vec4(ganho * cor.xyz, cor.w), vec4(0.9));
 }
 
   // )glsl";
