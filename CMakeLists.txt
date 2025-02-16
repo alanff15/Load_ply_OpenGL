@@ -24,7 +24,6 @@ link_libraries (Eigen3::Eigen)
 #################################################
 add_executable(load_ply #WIN32
     # opengl
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/GLDebug.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/buffer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/camera.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/program.cpp

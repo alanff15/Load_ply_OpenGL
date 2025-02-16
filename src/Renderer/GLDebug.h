@@ -1,15 +1,19 @@
 #pragma once
+
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define ASSERT(x) \
-  if (!(x)) __debugbreak();
+#include <iostream>
 
-#define GLCall(x) \
-  GLClearError(); \
-  x;              \
-  ASSERT(GLLogCall(#x, __FILE__, __LINE__))
-
-void GLClearError();
-bool GLLogCall(const char* function, const char* file, int line);
+#define GLCall(x)                                                                                                 \
+  {                                                                                                               \
+    while (glGetError() != GL_NO_ERROR);                                                                          \
+    x;                                                                                                            \
+    bool stop = false;                                                                                            \
+    while (GLenum error = glGetError()) {                                                                         \
+      std::cerr << "[OpenGL Error] (" << error << "): " << #x << " " << __FILE__ << ":" << __LINE__ << std::endl; \
+      stop = true;                                                                                                \
+    }                                                                                                             \
+    if (stop) __debugbreak();                                                                                     \
+  }
