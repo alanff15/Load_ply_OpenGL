@@ -20,14 +20,22 @@ link_libraries(
 #################################################
 add_executable(load_ply #WIN32
     # opengl
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/stb_image/stb_image.cpp # load image
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Texture.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Renderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/VertexArray.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/VertexBufferLayout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/VertexBuffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/IndexBuffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Shader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/GLDebug.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/buffer.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/camera.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/program.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/shader.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/trackball.cpp
+
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/framebuffer.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_attribute.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_finalization.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/splat_renderer.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/attribute_fs_glsl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/attribute_vs_glsl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/finalization_fs_glsl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/finalization_vs_glsl.cpp
     # imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui_demo.cpp
@@ -37,7 +45,6 @@ add_executable(load_ply #WIN32
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui_tables.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dep/imgui/imgui_widgets.cpp
     # main
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/App.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 )

@@ -1,23 +1,19 @@
 #include <windows.h>
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "Renderer/Renderer.h"
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
 #include "App.h"
+#include <iostream>
 
 void initGL(GLFWwindow*& window, int width = 1, int height = 1, const char* title = "", bool windowVisible = false) {
   if (!glfwInit()) {
     exit(EXIT_FAILURE);
   }
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   if (!windowVisible) {
@@ -89,7 +85,6 @@ void shutdownImGui() {
 int main() {
   // int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
   GLFWwindow* window;
-  Renderer renderer;
 
   initGL(window, 800, 600, "App", true);
   std::cout << glGetString(GL_VERSION) << std::endl;
@@ -109,8 +104,6 @@ int main() {
 
   // loop
   while (!glfwWindowShouldClose(window)) {
-    renderer.Clear();
-
     App::Render(window);
 
     startFrameImGui();
