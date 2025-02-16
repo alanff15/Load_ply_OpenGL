@@ -34,12 +34,12 @@ namespace GLviz {
 
 void UniformBufferWireframe::set_buffer_data(float const* color, int const* viewport) {
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * sizeof(GLfloat), color));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), 2 * sizeof(GLint), viewport));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * sizeof(GLfloat), color));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), 2 * sizeof(GLint), viewport));
   unbind();
 }
 
-UniformBufferCamera::UniformBufferCamera(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, 48 * sizeof(GLfloat)) {}
+UniformBufferCamera::UniformBufferCamera() : glUniformBuffer(48 * sizeof(GLfloat)) {}
 
 void UniformBufferCamera::set_buffer_data(Camera const& camera) {
   Matrix4f const& modelview_matrix = camera.get_modelview_matrix();
@@ -47,28 +47,28 @@ void UniformBufferCamera::set_buffer_data(Camera const& camera) {
   Matrix4f const& projection_matrix = camera.get_projection_matrix();
 
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, 16 * sizeof(GLfloat), modelview_matrix.data()));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), modelview_matrix_it.data()));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 32 * sizeof(GLfloat), 16 * sizeof(GLfloat), projection_matrix.data()));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, 16 * sizeof(GLfloat), modelview_matrix.data()));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 16 * sizeof(GLfloat), modelview_matrix_it.data()));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 32 * sizeof(GLfloat), 16 * sizeof(GLfloat), projection_matrix.data()));
   unbind();
 }
 
-UniformBufferMaterial::UniformBufferMaterial(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall) {}
+UniformBufferMaterial::UniformBufferMaterial() : glUniformBuffer() {}
 
 void UniformBufferMaterial::set_buffer_data(float const* mbuf) {
   bind();
-  GLCheck(GLCall->glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), mbuf, GL_DYNAMIC_DRAW));
+  GLCall(glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(GLfloat), mbuf, GL_DYNAMIC_DRAW));
   unbind();
 }
 
-UniformBufferWireframe::UniformBufferWireframe(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, 4 * sizeof(GLfloat) + 2 * sizeof(GLint)) {}
+UniformBufferWireframe::UniformBufferWireframe() : glUniformBuffer(4 * sizeof(GLfloat) + 2 * sizeof(GLint)) {}
 
-UniformBufferSphere::UniformBufferSphere(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, 2 * sizeof(GLfloat)) {}
+UniformBufferSphere::UniformBufferSphere() : glUniformBuffer(2 * sizeof(GLfloat)) {}
 
 void UniformBufferSphere::set_buffer_data(float radius, float projection) {
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat), &radius));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLfloat), sizeof(GLfloat), &projection));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLfloat), &radius));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLfloat), sizeof(GLfloat), &projection));
   unbind();
 }
 

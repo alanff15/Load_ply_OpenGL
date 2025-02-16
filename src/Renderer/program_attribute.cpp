@@ -28,10 +28,9 @@
 extern unsigned char const attribute_vs_glsl[];
 extern unsigned char const attribute_fs_glsl[];
 
-ProgramAttribute::ProgramAttribute(QOpenGLFunctions_4_1_Core* GLCall)
-: glProgram(GLCall),
-  m_attribute_vs_obj(GLCall),
-  m_attribute_fs_obj(GLCall),
+ProgramAttribute::ProgramAttribute()
+: m_attribute_vs_obj(),
+  m_attribute_fs_obj(),
   m_ewa_filter(false),
   m_backface_culling(false),
   m_visibility_pass(true),

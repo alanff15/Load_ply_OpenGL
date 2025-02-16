@@ -17,20 +17,24 @@ link_libraries(
     OpenGL32.lib
 )
 
+set(Eigen3_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dep/eigen-3.4.0/share/eigen3/cmake)
+find_package (Eigen3 3.3 REQUIRED)
+link_libraries (Eigen3::Eigen)
+
 #################################################
 add_executable(load_ply #WIN32
     # opengl
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/GLDebug.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/buffer.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/camera.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/program.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/shader.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/trackball.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/buffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/camera.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/program.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/shader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/glviz/trackball.cpp
 
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/framebuffer.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_attribute.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_finalization.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/splat_renderer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/framebuffer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_attribute.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/program_finalization.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/splat_renderer.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/attribute_fs_glsl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/shaders/attribute_vs_glsl.cpp

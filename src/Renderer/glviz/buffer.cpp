@@ -26,94 +26,94 @@
 
 namespace GLviz {
 
-glUniformBuffer::glUniformBuffer(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall) {
-  GLCheck(GLCall->glGenBuffers(1, &m_uniform_buffer_obj));
+glUniformBuffer::glUniformBuffer() {
+  GLCall(glGenBuffers(1, &m_uniform_buffer_obj));
 }
 
-glUniformBuffer::glUniformBuffer(QOpenGLFunctions_4_1_Core* GLCall, GLsizeiptr size) : glUniformBuffer(GLCall) {
-  GLCheck(GLCall->glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer_obj));
-  GLCheck(GLCall->glBufferData(GL_UNIFORM_BUFFER, size, reinterpret_cast<GLfloat*>(0), GL_DYNAMIC_DRAW));
-  GLCheck(GLCall->glBindBuffer(GL_UNIFORM_BUFFER, 0));
+glUniformBuffer::glUniformBuffer(GLsizeiptr size) : glUniformBuffer() {
+  GLCall(glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer_obj));
+  GLCall(glBufferData(GL_UNIFORM_BUFFER, size, reinterpret_cast<GLfloat*>(0), GL_DYNAMIC_DRAW));
+  GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
 glUniformBuffer::~glUniformBuffer() {
-  GLCheck(GLCall->glDeleteBuffers(1, &m_uniform_buffer_obj));
+  GLCall(glDeleteBuffers(1, &m_uniform_buffer_obj));
 }
 
 void glUniformBuffer::bind_buffer_base(GLuint index) {
-  GLCheck(GLCall->glBindBufferBase(GL_UNIFORM_BUFFER, index, m_uniform_buffer_obj));
+  GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, index, m_uniform_buffer_obj));
 }
 
 void glUniformBuffer::bind() {
-  GLCheck(GLCall->glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer_obj));
+  GLCall(glBindBuffer(GL_UNIFORM_BUFFER, m_uniform_buffer_obj));
 }
 
 void glUniformBuffer::unbind() {
-  GLCheck(GLCall->glBindBuffer(GL_UNIFORM_BUFFER, 0));
+  GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-glVertexArray::glVertexArray(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall) {
-  GLCheck(GLCall->glGenVertexArrays(1, &m_vertex_array_obj));
+glVertexArray::glVertexArray() {
+  GLCall(glGenVertexArrays(1, &m_vertex_array_obj));
 }
 
 glVertexArray::~glVertexArray() {
-  GLCheck(GLCall->glDeleteVertexArrays(1, &m_vertex_array_obj));
+  GLCall(glDeleteVertexArrays(1, &m_vertex_array_obj));
 }
 
 void glVertexArray::bind() {
-  GLCheck(GLCall->glBindVertexArray(m_vertex_array_obj));
+  GLCall(glBindVertexArray(m_vertex_array_obj));
 }
 
 void glVertexArray::unbind() {
-  GLCheck(GLCall->glBindVertexArray(0));
+  GLCall(glBindVertexArray(0));
 }
 
-glArrayBuffer::glArrayBuffer(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall) {
-  GLCheck(GLCall->glGenBuffers(1, &m_array_buffer_obj));
+glArrayBuffer::glArrayBuffer() {
+  GLCall(glGenBuffers(1, &m_array_buffer_obj));
 }
 
 glArrayBuffer::~glArrayBuffer() {
-  GLCheck(GLCall->glDeleteBuffers(1, &m_array_buffer_obj));
+  GLCall(glDeleteBuffers(1, &m_array_buffer_obj));
 }
 
 void glArrayBuffer::bind() {
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_array_buffer_obj));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_array_buffer_obj));
 }
 
 void glArrayBuffer::unbind() {
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 void glArrayBuffer::set_buffer_data(GLsizeiptr size, GLvoid const* ptr) {
   bind();
 
-  GLCheck(GLCall->glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW));
-  GLCheck(GLCall->glBufferSubData(GL_ARRAY_BUFFER, 0, size, ptr));
+  GLCall(glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW));
+  GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, size, ptr));
 
   unbind();
 }
 
-glElementArrayBuffer::glElementArrayBuffer(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall) {
-  GLCheck(GLCall->glGenBuffers(1, &m_element_array_buffer_obj));
+glElementArrayBuffer::glElementArrayBuffer() {
+  GLCall(glGenBuffers(1, &m_element_array_buffer_obj));
 }
 
 glElementArrayBuffer::~glElementArrayBuffer() {
-  GLCheck(GLCall->glDeleteBuffers(1, &m_element_array_buffer_obj));
+  GLCall(glDeleteBuffers(1, &m_element_array_buffer_obj));
 }
 
 void glElementArrayBuffer::bind() {
-  GLCheck(GLCall->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_array_buffer_obj));
+  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_array_buffer_obj));
 }
 
 void glElementArrayBuffer::unbind() {
-  GLCheck(GLCall->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 void glElementArrayBuffer::set_buffer_data(GLsizeiptr size, GLvoid const* ptr) {
   bind();
 
-  GLCheck(GLCall->glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW));
-  GLCheck(GLCall->glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, ptr));
+  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_STREAM_DRAW));
+  GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, ptr));
 
   unbind();
 }

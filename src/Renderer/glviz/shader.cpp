@@ -22,8 +22,6 @@
 
 #include "shader.hpp"
 
-#include <QOpenGLFunctions_4_1_Core>
-
 #include <string>
 #include <utility>
 #include <fstream>
@@ -32,14 +30,13 @@
 #include <iostream>
 
 #include <Eigen/Dense>
-#include "../openglDebug.h"
 
 using namespace Eigen;
 
-glShader::glShader(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall) {}
+glShader::glShader() {}
 
 glShader::~glShader() {
-  GLCheck(GLCall->glDeleteShader(m_shader_obj));
+  GLCall(glDeleteShader(m_shader_obj));
 }
 
 void glShader::load_from_file(std::string const& filename) {
@@ -80,8 +77,8 @@ void glShader::compile(std::map<std::string, int> const& define_list) {
   // Compile configured source.
   const char* source_cstr = source.c_str();
 
-  GLCheck(GLCall->glShaderSource(m_shader_obj, 1, &source_cstr, NULL));
-  GLCheck(GLCall->glCompileShader(m_shader_obj));
+  GLCall(glShaderSource(m_shader_obj, 1, &source_cstr, NULL));
+  GLCall(glCompileShader(m_shader_obj));
 
   if (!is_compiled()) {
     throw shader_compilation_error(infolog());
@@ -90,90 +87,90 @@ void glShader::compile(std::map<std::string, int> const& define_list) {
 
 bool glShader::is_compiled() const {
   GLint status;
-  GLCheck(GLCall->glGetShaderiv(m_shader_obj, GL_COMPILE_STATUS, &status));
+  GLCall(glGetShaderiv(m_shader_obj, GL_COMPILE_STATUS, &status));
 
   return (status == GL_TRUE);
 }
 
 std::string glShader::infolog() {
   GLint infoLogLength = 0;
-  GLCheck(GLCall->glGetShaderiv(m_shader_obj, GL_INFO_LOG_LENGTH, &infoLogLength));
+  GLCall(glGetShaderiv(m_shader_obj, GL_INFO_LOG_LENGTH, &infoLogLength));
 
   GLsizei logLength;
 
   std::unique_ptr<GLchar> infoLog(new GLchar[infoLogLength]);
-  GLCheck(GLCall->glGetShaderInfoLog(m_shader_obj, infoLogLength, &logLength, infoLog.get()));
+  GLCall(glGetShaderInfoLog(m_shader_obj, infoLogLength, &logLength, infoLog.get()));
 
   return std::string(infoLog.get());
 }
 
-glVertexShader::glVertexShader(QOpenGLFunctions_4_1_Core* GLCall) : glShader(GLCall) {
-  GLCheck(m_shader_obj = GLCall->glCreateShader(GL_VERTEX_SHADER));
+glVertexShader::glVertexShader() {
+  GLCall(m_shader_obj = glCreateShader(GL_VERTEX_SHADER));
 }
 
-glFragmentShader::glFragmentShader(QOpenGLFunctions_4_1_Core* GLCall) : glShader(GLCall) {
-  GLCheck(m_shader_obj = GLCall->glCreateShader(GL_FRAGMENT_SHADER));
+glFragmentShader::glFragmentShader() {
+  GLCall(m_shader_obj = glCreateShader(GL_FRAGMENT_SHADER));
 }
 
-glGeometryShader::glGeometryShader(QOpenGLFunctions_4_1_Core* GLCall) : glShader(GLCall) {
-  GLCheck(m_shader_obj = GLCall->glCreateShader(GL_GEOMETRY_SHADER));
+glGeometryShader::glGeometryShader() {
+  GLCall(m_shader_obj = glCreateShader(GL_GEOMETRY_SHADER));
 }
 
-glProgram::glProgram(QOpenGLFunctions_4_1_Core* GLCall) : GLCall(GLCall), m_program_obj(GLCall->glCreateProgram()) {}
+glProgram::glProgram() : m_program_obj(glCreateProgram()) {}
 
 glProgram::~glProgram() {
   detach_all();
-  GLCheck(GLCall->glDeleteProgram(m_program_obj));
+  GLCall(glDeleteProgram(m_program_obj));
 }
 
 void glProgram::use() const {
-  GLCheck(GLCall->glUseProgram(m_program_obj));
+  GLCall(glUseProgram(m_program_obj));
 }
 
 void glProgram::unuse() const {
-  GLCheck(GLCall->glUseProgram(0));
+  GLCall(glUseProgram(0));
 }
 
 void glProgram::link() {
-  GLCheck(GLCall->glLinkProgram(m_program_obj));
+  GLCall(glLinkProgram(m_program_obj));
 
   if (!is_linked()) throw shader_link_error(infolog());
 }
 
 void glProgram::attach_shader(glShader& shader) {
-  GLCheck(GLCall->glAttachShader(m_program_obj, shader.m_shader_obj));
+  GLCall(glAttachShader(m_program_obj, shader.m_shader_obj));
 }
 
 void glProgram::detach_shader(glShader& shader) {
-  GLCheck(GLCall->glDetachShader(m_program_obj, shader.m_shader_obj));
+  GLCall(glDetachShader(m_program_obj, shader.m_shader_obj));
 }
 
 void glProgram::detach_all() {
   GLsizei count;
   GLuint shader[64];
 
-  GLCheck(GLCall->glGetAttachedShaders(m_program_obj, 64, &count, shader));
+  GLCall(glGetAttachedShaders(m_program_obj, 64, &count, shader));
 
   for (GLsizei i(0); i < count; ++i) {
-    GLCheck(GLCall->glDetachShader(m_program_obj, shader[i]));
+    GLCall(glDetachShader(m_program_obj, shader[i]));
   }
 }
 
 bool glProgram::is_linked() {
   GLint status;
-  GLCheck(GLCall->glGetProgramiv(m_program_obj, GL_LINK_STATUS, &status));
+  GLCall(glGetProgramiv(m_program_obj, GL_LINK_STATUS, &status));
 
   return (status == GL_TRUE);
 }
 
 bool glProgram::is_attached(glShader const& shader) {
   GLint number_shader_attached;
-  GLCheck(GLCall->glGetProgramiv(m_program_obj, GL_ATTACHED_SHADERS, &number_shader_attached));
+  GLCall(glGetProgramiv(m_program_obj, GL_ATTACHED_SHADERS, &number_shader_attached));
 
   std::unique_ptr<GLuint> shader_list(new GLuint[number_shader_attached]);
 
   GLsizei count;
-  GLCheck(GLCall->glGetAttachedShaders(m_program_obj, static_cast<GLsizei>(number_shader_attached), &count, shader_list.get()));
+  GLCall(glGetAttachedShaders(m_program_obj, static_cast<GLsizei>(number_shader_attached), &count, shader_list.get()));
 
   for (unsigned int i = 0; i < static_cast<GLuint>(count); ++i)
     if ((shader_list.get())[i] == shader.m_shader_obj) return true;
@@ -183,32 +180,32 @@ bool glProgram::is_attached(glShader const& shader) {
 
 std::string glProgram::infolog() {
   GLint infoLogLength = 0;
-  GLCheck(GLCall->glGetProgramiv(m_program_obj, GL_INFO_LOG_LENGTH, &infoLogLength));
+  GLCall(glGetProgramiv(m_program_obj, GL_INFO_LOG_LENGTH, &infoLogLength));
 
   GLsizei logLength;
 
   std::unique_ptr<GLchar> infoLog(new GLchar[infoLogLength]);
-  GLCheck(GLCall->glGetProgramInfoLog(m_program_obj, infoLogLength, &logLength, infoLog.get()));
+  GLCall(glGetProgramInfoLog(m_program_obj, infoLogLength, &logLength, infoLog.get()));
 
   return std::string(infoLog.get());
 }
 
 void glProgram::set_uniform_1i(GLchar const* name, GLint value) {
   GLint location;
-  GLCheck(location = GLCall->glGetUniformLocation(m_program_obj, name));
+  GLCall(location = glGetUniformLocation(m_program_obj, name));
   if (location == -1) {
     throw uniform_not_found_error(name);
   }
 
-  GLCheck(GLCall->glProgramUniform1i(m_program_obj, location, value));
+  GLCall(glProgramUniform1i(m_program_obj, location, value));
 }
 
 void glProgram::set_uniform_block_binding(GLchar const* name, GLuint block_binding) {
   GLuint block_index;
-  GLCheck(block_index = GLCall->glGetUniformBlockIndex(m_program_obj, name));
+  GLCall(block_index = glGetUniformBlockIndex(m_program_obj, name));
   if (block_index == GL_INVALID_INDEX) {
     throw uniform_not_found_error(name);
   }
 
-  GLCheck(GLCall->glUniformBlockBinding(m_program_obj, block_index, block_binding));
+  GLCall(glUniformBlockBinding(m_program_obj, block_index, block_binding));
 }

@@ -23,10 +23,11 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include <QOpenGLFunctions_4_1_Core>
 #include <string>
 #include <map>
 #include <stdexcept>
+
+#include "../GLDebug.h"
 
 struct file_open_error : public std::runtime_error {
   file_open_error(const std::string& errmsg) : runtime_error(errmsg) {}
@@ -47,7 +48,7 @@ struct uniform_not_found_error : public std::logic_error {
 class glShader {
 public:
   virtual ~glShader();
-  glShader(QOpenGLFunctions_4_1_Core* GLCall);
+  glShader();
 
   void load_from_file(std::string const& filename);
   void load_from_cstr(char const* source_cstr);
@@ -58,7 +59,6 @@ public:
   std::string infolog();
 
 protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
   GLuint m_shader_obj;
   std::string m_source;
 
@@ -67,22 +67,22 @@ protected:
 
 class glVertexShader : public glShader {
 public:
-  glVertexShader(QOpenGLFunctions_4_1_Core* GLCall);
+  glVertexShader();
 };
 
 class glFragmentShader : public glShader {
 public:
-  glFragmentShader(QOpenGLFunctions_4_1_Core* GLCall);
+  glFragmentShader();
 };
 
 class glGeometryShader : public glShader {
 public:
-  glGeometryShader(QOpenGLFunctions_4_1_Core* GLCall);
+  glGeometryShader();
 };
 
 class glProgram {
 public:
-  glProgram(QOpenGLFunctions_4_1_Core* GLCall);
+  glProgram();
   virtual ~glProgram();
 
   void use() const;
@@ -103,7 +103,6 @@ public:
 
 protected:
   GLuint m_program_obj;
-  QOpenGLFunctions_4_1_Core* GLCall;
 };
 
 #endif  // SHADER_HPP

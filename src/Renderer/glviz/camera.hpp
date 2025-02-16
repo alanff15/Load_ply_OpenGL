@@ -76,6 +76,8 @@ public:
   void trackball_end_motion_zoom(float end_x, float end_y);
   void trackball_end_motion_translate(float end_x, float end_y);
 
+  void set_modelview_matrix(Eigen::Matrix4f in);
+
 private:
   void set_projection_matrix_from_frustum();
   void set_modelview_matrix_from_orientation();

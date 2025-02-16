@@ -25,6 +25,7 @@
 
 #include "shader.hpp"
 #include "buffer.hpp"
+#include "../GLDebug.h"
 
 namespace GLviz {
 
@@ -32,27 +33,27 @@ class Camera;
 
 class UniformBufferCamera : public glUniformBuffer {
 public:
-  UniformBufferCamera(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferCamera();
 
   void set_buffer_data(Camera const& camera);
 };
 
 class UniformBufferMaterial : public glUniformBuffer {
 public:
-  UniformBufferMaterial(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferMaterial();
   void set_buffer_data(const float* mbuf);
 };
 
 class UniformBufferWireframe : public glUniformBuffer {
 public:
-  UniformBufferWireframe(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferWireframe();
 
   void set_buffer_data(float const* color, int const* viewport);
 };
 
 class UniformBufferSphere : public glUniformBuffer {
 public:
-  UniformBufferSphere(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferSphere();
 
   void set_buffer_data(float radius, float projection);
 };

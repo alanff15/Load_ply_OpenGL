@@ -28,12 +28,7 @@
 extern unsigned char const finalization_vs_glsl[];
 extern unsigned char const finalization_fs_glsl[];
 
-ProgramFinalization::ProgramFinalization(QOpenGLFunctions_4_1_Core* GLCall)
-: glProgram(GLCall),
-  m_smooth(false),
-  m_multisampling(false),
-  m_finalization_vs_obj(GLCall),
-  m_finalization_fs_obj(GLCall) {
+ProgramFinalization::ProgramFinalization() : m_smooth(false), m_multisampling(false), m_finalization_vs_obj(), m_finalization_fs_obj() {
   initialize_shader_obj();
   initialize_program_obj();
 }

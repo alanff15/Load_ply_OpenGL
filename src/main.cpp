@@ -89,9 +89,6 @@ int main() {
   initGL(window, 800, 600, "App", true);
   std::cout << glGetString(GL_VERSION) << std::endl;
 
-  GLCall(glEnable(GL_BLEND));
-  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
   initImGui(window);
   App::Setup(window);
 

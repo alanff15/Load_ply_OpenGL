@@ -49,28 +49,28 @@ struct Surfel {
 
 class UniformBufferRaycast : public GLviz::glUniformBuffer {
 public:
-  UniformBufferRaycast(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferRaycast();
 
   void set_buffer_data(Eigen::Matrix4f const& projection_matrix_inv, GLint const* viewport);
 };
 
 class UniformBufferFrustum : public GLviz::glUniformBuffer {
 public:
-  UniformBufferFrustum(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferFrustum();
 
   void set_buffer_data(Eigen::Vector4f const* frustum_plane);
 };
 
 class UniformBufferParameter : public GLviz::glUniformBuffer {
 public:
-  UniformBufferParameter(QOpenGLFunctions_4_1_Core* GLCall);
+  UniformBufferParameter();
 
   void set_buffer_data(Eigen::Vector3f const& color, float shininess, float radius_scale, float ewa_radius, float epsilon);
 };
 
 class SplatRenderer {
 public:
-  SplatRenderer(QOpenGLFunctions_4_1_Core* GLCall, GLviz::Camera const& camera);
+  SplatRenderer(GLviz::Camera const& camera);
   virtual ~SplatRenderer();
 
   void render_frame(std::vector<Surfel> const& visible_geometry);
@@ -146,9 +146,6 @@ private:
   UniformBufferRaycast m_uniform_raycast;
   UniformBufferFrustum m_uniform_frustum;
   UniformBufferParameter m_uniform_parameter;
-
-protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
 };
 
 #endif  // SPLATRENDER_HPP

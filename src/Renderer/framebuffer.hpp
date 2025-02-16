@@ -23,13 +23,12 @@
 #ifndef FRAMEBUFFER_HPP
 #define FRAMEBUFFER_HPP
 
-#include <QOpenGLFunctions_4_1_Core>
 #include <memory>
-#include "openglDebug.h"
+#include "GLDebug.h"
 
 class Framebuffer {
 public:
-  Framebuffer(QOpenGLFunctions_4_1_Core* GLCall);
+  Framebuffer();
   ~Framebuffer();
 
   GLuint color_texture();
@@ -47,9 +46,6 @@ public:
   void bind();
   void unbind();
   void reshape(GLint width, GLint height);
-
-protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
 
 private:
   void initialize();

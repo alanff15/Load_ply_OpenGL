@@ -27,48 +27,39 @@
 
 using namespace Eigen;
 
-UniformBufferRaycast::UniformBufferRaycast(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, sizeof(Matrix4f) + sizeof(Vector4f)) {}
+UniformBufferRaycast::UniformBufferRaycast() : glUniformBuffer(sizeof(Matrix4f) + sizeof(Vector4f)) {}
 
 void UniformBufferRaycast::set_buffer_data(Matrix4f const& projection_matrix_inv, GLint const* viewport) {
   float viewportf[4] = {static_cast<float>(viewport[0]), static_cast<float>(viewport[1]), static_cast<float>(viewport[2]), static_cast<float>(viewport[3])};
 
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4f), projection_matrix_inv.data()));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix4f), 4 * sizeof(float), viewportf));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4f), projection_matrix_inv.data()));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix4f), 4 * sizeof(float), viewportf));
   unbind();
 }
 
-UniformBufferFrustum::UniformBufferFrustum(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, 6 * sizeof(Vector4f)) {}
+UniformBufferFrustum::UniformBufferFrustum() : glUniformBuffer(6 * sizeof(Vector4f)) {}
 
 void UniformBufferFrustum::set_buffer_data(Vector4f const* frustum_plane) {
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, 6 * sizeof(Vector4f), static_cast<void const*>(frustum_plane)));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, 6 * sizeof(Vector4f), static_cast<void const*>(frustum_plane)));
   unbind();
 }
 
-UniformBufferParameter::UniformBufferParameter(QOpenGLFunctions_4_1_Core* GLCall) : glUniformBuffer(GLCall, 8 * sizeof(float)) {}
+UniformBufferParameter::UniformBufferParameter() : glUniformBuffer(8 * sizeof(float)) {}
 
 void UniformBufferParameter::set_buffer_data(Vector3f const& color, float shininess, float radius_scale, float ewa_radius, float epsilon) {
   bind();
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 0, 3 * sizeof(float), color.data()));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 12, sizeof(float), &shininess));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 16, sizeof(float), &radius_scale));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 20, sizeof(float), &ewa_radius));
-  GLCheck(GLCall->glBufferSubData(GL_UNIFORM_BUFFER, 24, sizeof(float), &epsilon));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, 3 * sizeof(float), color.data()));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 12, sizeof(float), &shininess));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 16, sizeof(float), &radius_scale));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 20, sizeof(float), &ewa_radius));
+  GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 24, sizeof(float), &epsilon));
   unbind();
 }
 
-SplatRenderer::SplatRenderer(QOpenGLFunctions_4_1_Core* GLCall, GLviz::Camera const& camera)
-: GLCall(GLCall),
-  m_visibility(GLCall),
-  m_attribute(GLCall),
-  m_finalization(GLCall),
-  m_uniform_camera(GLCall),
-  m_uniform_raycast(GLCall),
-  m_uniform_frustum(GLCall),
-  m_uniform_parameter(GLCall),
-  m_fbo(GLCall),
-  m_camera(camera),
+SplatRenderer::SplatRenderer(GLviz::Camera const& camera)
+: m_camera(camera),
   m_soft_zbuffer(true),
   m_smooth(false),
   m_color_material(true),
@@ -94,12 +85,12 @@ SplatRenderer::SplatRenderer(QOpenGLFunctions_4_1_Core* GLCall, GLviz::Camera co
 }
 
 SplatRenderer::~SplatRenderer() {
-  GLCheck(GLCall->glDeleteVertexArrays(1, &m_vao));
-  GLCheck(GLCall->glDeleteBuffers(1, &m_vbo));
-  GLCheck(GLCall->glDeleteBuffers(1, &m_rect_vertices_vbo));
-  GLCheck(GLCall->glDeleteBuffers(1, &m_rect_texture_uv_vbo));
-  GLCheck(GLCall->glDeleteVertexArrays(1, &m_rect_vao));
-  GLCheck(GLCall->glDeleteTextures(1, &m_filter_kernel));
+  GLCall(glDeleteVertexArrays(1, &m_vao));
+  GLCall(glDeleteBuffers(1, &m_vbo));
+  GLCall(glDeleteBuffers(1, &m_rect_vertices_vbo));
+  GLCall(glDeleteBuffers(1, &m_rect_texture_uv_vbo));
+  GLCall(glDeleteVertexArrays(1, &m_rect_vao));
+  GLCall(glDeleteTextures(1, &m_filter_kernel));
 }
 
 void SplatRenderer::setup_program_objects() {
@@ -128,12 +119,12 @@ inline void SplatRenderer::setup_filter_kernel() {
     yi[i] = std::exp(-w);
   }
 
-  GLCheck(GLCall->glGenTextures(1, &m_filter_kernel));
-  GLCheck(GLCall->glBindTexture(GL_TEXTURE_1D, m_filter_kernel));
-  GLCheck(GLCall->glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
-  GLCheck(GLCall->glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-  GLCheck(GLCall->glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-  GLCheck(GLCall->glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, 256, 0, GL_RED, GL_FLOAT, yi));
+  GLCall(glGenTextures(1, &m_filter_kernel));
+  GLCall(glBindTexture(GL_TEXTURE_1D, m_filter_kernel));
+  GLCall(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
+  GLCall(glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+  GLCall(glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+  GLCall(glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, 256, 0, GL_RED, GL_FLOAT, yi));
 }
 
 inline void SplatRenderer::setup_screen_size_quad() {
@@ -141,59 +132,59 @@ inline void SplatRenderer::setup_screen_size_quad() {
 
   float rect_texture_uv[8] = {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
 
-  GLCheck(GLCall->glGenBuffers(1, &m_rect_vertices_vbo));
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_rect_vertices_vbo));
-  GLCheck(GLCall->glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), rect_vertices, GL_STATIC_DRAW));
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GLCall(glGenBuffers(1, &m_rect_vertices_vbo));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_rect_vertices_vbo));
+  GLCall(glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), rect_vertices, GL_STATIC_DRAW));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
-  GLCheck(GLCall->glGenBuffers(1, &m_rect_texture_uv_vbo));
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_rect_texture_uv_vbo));
-  GLCheck(GLCall->glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), rect_texture_uv, GL_STATIC_DRAW));
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GLCall(glGenBuffers(1, &m_rect_texture_uv_vbo));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_rect_texture_uv_vbo));
+  GLCall(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), rect_texture_uv, GL_STATIC_DRAW));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
-  GLCheck(GLCall->glGenVertexArrays(1, &m_rect_vao));
-  GLCheck(GLCall->glBindVertexArray(m_rect_vao));
+  GLCall(glGenVertexArrays(1, &m_rect_vao));
+  GLCall(glBindVertexArray(m_rect_vao));
 
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_rect_vertices_vbo));
-  GLCheck(GLCall->glEnableVertexAttribArray(0));
-  GLCheck(GLCall->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const GLvoid*>(0)));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_rect_vertices_vbo));
+  GLCall(glEnableVertexAttribArray(0));
+  GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const GLvoid*>(0)));
 
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_rect_texture_uv_vbo));
-  GLCheck(GLCall->glEnableVertexAttribArray(1));
-  GLCheck(GLCall->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<const GLvoid*>(0)));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_rect_texture_uv_vbo));
+  GLCall(glEnableVertexAttribArray(1));
+  GLCall(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<const GLvoid*>(0)));
 
-  GLCheck(GLCall->glBindVertexArray(0));
+  GLCall(glBindVertexArray(0));
 }
 
 void SplatRenderer::setup_vertex_array_buffer_object() {
-  GLCheck(GLCall->glGenBuffers(1, &m_vbo));
+  GLCall(glGenBuffers(1, &m_vbo));
 
-  GLCheck(GLCall->glGenVertexArrays(1, &m_vao));
-  GLCheck(GLCall->glBindVertexArray(m_vao));
+  GLCall(glGenVertexArrays(1, &m_vao));
+  GLCall(glBindVertexArray(m_vao));
 
-  GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
 
   // Center c.
-  GLCheck(GLCall->glEnableVertexAttribArray(0));
-  GLCheck(GLCall->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(0)));
+  GLCall(glEnableVertexAttribArray(0));
+  GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(0)));
 
   // Tagent vector u.
-  GLCheck(GLCall->glEnableVertexAttribArray(1));
-  GLCheck(GLCall->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(12)));
+  GLCall(glEnableVertexAttribArray(1));
+  GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(12)));
 
   // Tangent vector v.
-  GLCheck(GLCall->glEnableVertexAttribArray(2));
-  GLCheck(GLCall->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(24)));
+  GLCall(glEnableVertexAttribArray(2));
+  GLCall(glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(24)));
 
   // Clipping plane p.
-  GLCheck(GLCall->glEnableVertexAttribArray(3));
-  GLCheck(GLCall->glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(36)));
+  GLCall(glEnableVertexAttribArray(3));
+  GLCall(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Surfel), reinterpret_cast<const GLfloat*>(36)));
 
   // Color rgba.
-  GLCheck(GLCall->glEnableVertexAttribArray(4));
-  GLCheck(GLCall->glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Surfel), reinterpret_cast<const GLbyte*>(48)));
+  GLCall(glEnableVertexAttribArray(4));
+  GLCall(glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Surfel), reinterpret_cast<const GLbyte*>(48)));
 
-  GLCheck(GLCall->glBindVertexArray(0));
+  GLCall(glBindVertexArray(0));
 }
 
 bool SplatRenderer::smooth() const {
@@ -341,7 +332,7 @@ void SplatRenderer::setup_uniforms() {
 
   // raycast
   GLint viewport[4];
-  GLCheck(GLCall->glGetIntegerv(GL_VIEWPORT, viewport));
+  GLCall(glGetIntegerv(GL_VIEWPORT, viewport));
   m_uniform_raycast.set_buffer_data(m_camera.get_projection_matrix().inverse(), viewport);
 
   // frustum
@@ -360,13 +351,13 @@ void SplatRenderer::setup_uniforms() {
 }
 
 void SplatRenderer::render_pass(bool depth_only) {
-  GLCheck(GLCall->glEnable(GL_DEPTH_TEST));
-  GLCheck(GLCall->glEnable(GL_PROGRAM_POINT_SIZE));
+  GLCall(glEnable(GL_DEPTH_TEST));
+  GLCall(glEnable(GL_PROGRAM_POINT_SIZE));
 
   if (!depth_only && m_soft_zbuffer) {
-    GLCheck(GLCall->glEnable(GL_BLEND));
-    GLCheck(GLCall->glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD));
-    GLCheck(GLCall->glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ONE, GL_ONE));
+    GLCall(glEnable(GL_BLEND));
+    GLCall(glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD));
+    GLCall(glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ONE, GL_ONE));
   }
 
   glProgram& program = depth_only ? m_visibility : m_attribute;
@@ -374,74 +365,74 @@ void SplatRenderer::render_pass(bool depth_only) {
   program.use();
 
   if (depth_only) {
-    GLCheck(GLCall->glDepthMask(GL_TRUE));
-    GLCheck(GLCall->glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
+    GLCall(glDepthMask(GL_TRUE));
+    GLCall(glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE));
   } else {
     if (m_soft_zbuffer) {
-      GLCheck(GLCall->glDepthMask(GL_FALSE));
+      GLCall(glDepthMask(GL_FALSE));
     } else {
-      GLCheck(GLCall->glDepthMask(GL_TRUE));
+      GLCall(glDepthMask(GL_TRUE));
     }
 
-    GLCheck(GLCall->glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+    GLCall(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
   }
 
   setup_uniforms();
 
   if (!depth_only && m_soft_zbuffer && m_ewa_filter) {
-    GLCheck(GLCall->glActiveTexture(GL_TEXTURE1));
-    GLCheck(GLCall->glBindTexture(GL_TEXTURE_1D, m_filter_kernel));
+    GLCall(glActiveTexture(GL_TEXTURE1));
+    GLCall(glBindTexture(GL_TEXTURE_1D, m_filter_kernel));
 
     program.set_uniform_1i("filter_kernel", 1);
   }
 
-  GLCheck(GLCall->glBindVertexArray(m_vao));
-  GLCheck(GLCall->glDrawArrays(GL_POINTS, 0, m_num_pts));
-  GLCheck(GLCall->glBindVertexArray(0));
+  GLCall(glBindVertexArray(m_vao));
+  GLCall(glDrawArrays(GL_POINTS, 0, m_num_pts));
+  GLCall(glBindVertexArray(0));
 
   program.unuse();
 
-  GLCheck(GLCall->glDisable(GL_PROGRAM_POINT_SIZE));
-  GLCheck(GLCall->glDisable(GL_BLEND));
-  GLCheck(GLCall->glDisable(GL_DEPTH_TEST));
+  GLCall(glDisable(GL_PROGRAM_POINT_SIZE));
+  GLCall(glDisable(GL_BLEND));
+  GLCall(glDisable(GL_DEPTH_TEST));
 }
 
 void SplatRenderer::begin_frame() {
   m_fbo.bind();
 
-  GLCheck(GLCall->glDepthMask(GL_TRUE));
-  GLCheck(GLCall->glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+  GLCall(glDepthMask(GL_TRUE));
+  GLCall(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
 
-  GLCheck(GLCall->glClearColor(0.0, 0.0, 0.0, 0.0));
-  GLCheck(GLCall->glClearDepth(1.0));
+  GLCall(glClearColor(0.0, 0.0, 0.0, 0.0));
+  GLCall(glClearDepth(1.0));
 
-  GLCheck(GLCall->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+  GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 void SplatRenderer::end_frame() {
   m_fbo.unbind();
 
   if (m_multisample) {
-    GLCheck(GLCall->glActiveTexture(GL_TEXTURE0));
-    GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.color_texture()));
+    GLCall(glActiveTexture(GL_TEXTURE0));
+    GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.color_texture()));
 
     if (m_smooth) {
-      GLCheck(GLCall->glActiveTexture(GL_TEXTURE1));
-      GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.normal_texture()));
+      GLCall(glActiveTexture(GL_TEXTURE1));
+      GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.normal_texture()));
 
-      GLCheck(GLCall->glActiveTexture(GL_TEXTURE2));
-      GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.depth_texture()));
+      GLCall(glActiveTexture(GL_TEXTURE2));
+      GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_fbo.depth_texture()));
     }
   } else {
-    GLCheck(GLCall->glActiveTexture(GL_TEXTURE0));
-    GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D, m_fbo.color_texture()));
+    GLCall(glActiveTexture(GL_TEXTURE0));
+    GLCall(glBindTexture(GL_TEXTURE_2D, m_fbo.color_texture()));
 
     if (m_smooth) {
-      GLCheck(GLCall->glActiveTexture(GL_TEXTURE1));
-      GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D, m_fbo.normal_texture()));
+      GLCall(glActiveTexture(GL_TEXTURE1));
+      GLCall(glBindTexture(GL_TEXTURE_2D, m_fbo.normal_texture()));
 
-      GLCheck(GLCall->glActiveTexture(GL_TEXTURE2));
-      GLCheck(GLCall->glBindTexture(GL_TEXTURE_2D, m_fbo.depth_texture()));
+      GLCall(glActiveTexture(GL_TEXTURE2));
+      GLCall(glBindTexture(GL_TEXTURE_2D, m_fbo.depth_texture()));
     }
   }
 
@@ -459,9 +450,9 @@ void SplatRenderer::end_frame() {
     std::cerr << "Warning: Failed to set a uniform variable." << std::endl << e.what() << std::endl;
   }
 
-  GLCheck(GLCall->glBindVertexArray(m_rect_vao));
-  GLCheck(GLCall->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-  GLCheck(GLCall->glBindVertexArray(0));
+  GLCall(glBindVertexArray(m_rect_vao));
+  GLCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+  GLCall(glBindVertexArray(0));
 }
 
 void SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry) {
@@ -470,15 +461,15 @@ void SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry) {
   m_num_pts = static_cast<unsigned int>(visible_geometry.size());
 
   if (m_num_pts > 0) {
-    GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
-    GLCheck(GLCall->glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW));
-    GLCheck(GLCall->glBufferData(GL_ARRAY_BUFFER, sizeof(Surfel) * m_num_pts, &visible_geometry.front(), GL_DYNAMIC_DRAW));
-    GLCheck(GLCall->glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Surfel) * m_num_pts, &visible_geometry.front(), GL_DYNAMIC_DRAW));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
     if (m_multisample) {
-      GLCheck(GLCall->glEnable(GL_MULTISAMPLE));
-      GLCheck(GLCall->glEnable(GL_SAMPLE_SHADING));
-      GLCheck(GLCall->glMinSampleShading(4.0));
+      GLCall(glEnable(GL_MULTISAMPLE));
+      GLCall(glEnable(GL_SAMPLE_SHADING));
+      GLCall(glMinSampleShading(4.0));
     }
 
     if (m_soft_zbuffer) {
@@ -488,8 +479,8 @@ void SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry) {
     render_pass(false);
 
     if (m_multisample) {
-      GLCheck(GLCall->glDisable(GL_MULTISAMPLE));
-      GLCheck(GLCall->glDisable(GL_SAMPLE_SHADING));
+      GLCall(glDisable(GL_MULTISAMPLE));
+      GLCall(glDisable(GL_SAMPLE_SHADING));
     }
   }
 

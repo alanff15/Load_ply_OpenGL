@@ -27,7 +27,7 @@
 
 class ProgramFinalization : public glProgram {
 public:
-  ProgramFinalization(QOpenGLFunctions_4_1_Core* GLCall);
+  ProgramFinalization();
 
   void set_multisampling(bool enable);
   void set_smooth(bool enable);

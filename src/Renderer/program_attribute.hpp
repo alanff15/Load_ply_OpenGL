@@ -27,7 +27,7 @@
 
 class ProgramAttribute : public glProgram {
 public:
-  ProgramAttribute(QOpenGLFunctions_4_1_Core* GLCall);
+  ProgramAttribute();
 
   void set_ewa_filter(bool enable = true);
   void set_pointsize_method(unsigned int pointsize_method);

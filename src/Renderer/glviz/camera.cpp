@@ -179,4 +179,8 @@ void Camera::trackball_end_motion_translate(float end_x, float end_y) {
   trackball_begin_motion(end_x, end_y);
 }
 
+void Camera::set_modelview_matrix(Eigen::Matrix4f in) {
+  m_modelview_matrix = in;
+}
+
 }  // namespace GLviz

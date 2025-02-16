@@ -23,15 +23,14 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include <QOpenGLFunctions_4_1_Core>
-#include "../openglDebug.h"
+#include "../GLDebug.h"
 
 namespace GLviz {
 
 class glUniformBuffer {
 public:
-  glUniformBuffer(QOpenGLFunctions_4_1_Core* GLCall);
-  glUniformBuffer(QOpenGLFunctions_4_1_Core* GLCall, GLsizeiptr size);
+  glUniformBuffer();
+  glUniformBuffer(GLsizeiptr size);
 
   ~glUniformBuffer();
 
@@ -40,7 +39,6 @@ public:
 protected:
   void bind();
   void unbind();
-  QOpenGLFunctions_4_1_Core* GLCall;
 
 private:
   GLuint m_uniform_buffer_obj;
@@ -48,14 +46,11 @@ private:
 
 class glVertexArray {
 public:
-  glVertexArray(QOpenGLFunctions_4_1_Core* GLCall);
+  glVertexArray();
   ~glVertexArray();
 
   void bind();
   void unbind();
-
-protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
 
 private:
   GLuint m_vertex_array_obj;
@@ -63,7 +58,7 @@ private:
 
 class glArrayBuffer {
 public:
-  glArrayBuffer(QOpenGLFunctions_4_1_Core* GLCall);
+  glArrayBuffer();
   ~glArrayBuffer();
 
   void bind();
@@ -71,25 +66,19 @@ public:
 
   void set_buffer_data(GLsizeiptr size, GLvoid const* ptr);
 
-protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
-
 private:
   GLuint m_array_buffer_obj;
 };
 
 class glElementArrayBuffer {
 public:
-  glElementArrayBuffer(QOpenGLFunctions_4_1_Core* GLCall);
+  glElementArrayBuffer();
   ~glElementArrayBuffer();
 
   void bind();
   void unbind();
 
   void set_buffer_data(GLsizeiptr size, GLvoid const* ptr);
-
-protected:
-  QOpenGLFunctions_4_1_Core* GLCall;
 
 private:
   GLuint m_element_array_buffer_obj;
