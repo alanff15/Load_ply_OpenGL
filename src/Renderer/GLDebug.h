@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+// #define GLCall(x) x
+
 #define GLCall(x)                                                                                                 \
   {                                                                                                               \
     while (glGetError() != GL_NO_ERROR);                                                                          \

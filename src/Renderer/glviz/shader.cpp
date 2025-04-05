@@ -116,7 +116,9 @@ glGeometryShader::glGeometryShader() {
   GLCall(m_shader_obj = glCreateShader(GL_GEOMETRY_SHADER));
 }
 
-glProgram::glProgram() : m_program_obj(glCreateProgram()) {}
+glProgram::glProgram() {
+  GLCall(m_program_obj = glCreateProgram());
+}
 
 glProgram::~glProgram() {
   detach_all();
